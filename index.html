@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f5f0e8">
+  <meta name="description" content="Пиксель-арт на виртуальной клетчатой бумаге">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Пиксель-арт">
+  <title>Пиксель-арт на клетчатой бумаге</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icon-192.svg">
+  <link rel="icon" href="assets/icon-192.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/print.css">
+</head>
+<body>
+
+  <!-- ── Update Banner ──────────────────────────────────────────────── -->
+  <div id="update-banner" class="update-banner hidden" role="alert" aria-live="polite">
+    <span>Доступно обновление</span>
+    <button id="update-btn">Обновить сейчас</button>
+    <button id="update-dismiss" aria-label="Закрыть">✕</button>
+  </div>
+
+  <!-- ── Onboarding overlay ─────────────────────────────────────────── -->
+  <div id="onboarding" class="onboarding-overlay" role="dialog" aria-modal="true"></div>
+
+  <!-- ── Main App ───────────────────────────────────────────────────── -->
+  <div id="app" class="app-container hidden">
+
+    <!-- Desktop sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Панель инструментов">
+
+      <!-- Drawing tools -->
+      <div class="tool-group">
+        <button class="tool-btn active" id="tool-pen" title="Ручка (P)" aria-label="Ручка">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="tool-eraser" title="Ластик (E)" aria-label="Ластик">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 20H7L3 16l9-9 8 8-2.5 2.5"/>
+            <path d="M6.0001 17.0001L17 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Undo / Redo -->
+      <div class="tool-group">
+        <button class="tool-btn" id="undo-btn" title="Отменить (Ctrl+Z)" aria-label="Отменить" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 7v6h6"/>
+            <path d="M3 13a9 9 0 1018 0 9 9 0 00-15-6.7L3 13"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="redo-btn" title="Повторить (Ctrl+Y)" aria-label="Повторить" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 7v6h-6"/>
+            <path d="M21 13a9 9 0 10-18 0 9 9 0 0015-6.7L21 13"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Color selector (ballpoint pen icons) -->
+      <div class="color-group" role="radiogroup" aria-label="Цвет чернил">
+        <button class="color-btn active" id="color-black" data-color="black" title="Чёрный" aria-label="Чёрный" aria-checked="true" role="radio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3.5C10.5 2.2 13.5 2.2 16 3.5L17.5 19l-5.5-2L6.5 19z" fill="#1a1a2e"/>
+            <rect x="10.5" y="1" width="3" height="2.5" rx="1" fill="#888"/>
+          </svg>
+        </button>
+        <button class="color-btn" id="color-blue" data-color="blue" title="Синий" aria-label="Синий" aria-checked="false" role="radio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3.5C10.5 2.2 13.5 2.2 16 3.5L17.5 19l-5.5-2L6.5 19z" fill="#1a3a8f"/>
+            <rect x="10.5" y="1" width="3" height="2.5" rx="1" fill="#888"/>
+          </svg>
+        </button>
+        <button class="color-btn" id="color-red" data-color="red" title="Красный" aria-label="Красный" aria-checked="false" role="radio">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3.5C10.5 2.2 13.5 2.2 16 3.5L17.5 19l-5.5-2L6.5 19z" fill="#c0392b"/>
+            <rect x="10.5" y="1" width="3" height="2.5" rx="1" fill="#888"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Zoom controls -->
+      <div class="tool-group zoom-group">
+        <button class="tool-btn" id="zoom-in" title="Увеличить (+)" aria-label="Увеличить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+          </svg>
+        </button>
+        <span class="zoom-level" id="zoom-level" aria-live="polite">—</span>
+        <button class="tool-btn" id="zoom-out" title="Уменьшить (-)" aria-label="Уменьшить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35M8 11h6"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="zoom-fit" title="По размеру экрана (0)" aria-label="По размеру экрана">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Save / Load / Export / Print -->
+      <div class="tool-group">
+        <button class="tool-btn" id="save-btn" title="Сохранить (Ctrl+S)" aria-label="Сохранить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="load-btn" title="Загрузить" aria-label="Загрузить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="export-btn" title="Экспорт PNG" aria-label="Экспорт PNG">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+        <button class="tool-btn" id="print-btn" title="Печать" aria-label="Печать">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+        </button>
+      </div>
+
+    </aside><!-- /sidebar -->
+
+    <!-- Canvas area -->
+    <main class="canvas-area" id="canvas-area" aria-label="Холст для рисования">
+      <div class="canvas-viewport" id="canvas-viewport">
+        <canvas id="main-canvas" role="img" aria-label="Клетчатая бумага для рисования"></canvas>
+      </div>
+
+      <!-- Minimap -->
+      <div class="minimap-container hidden" id="minimap-container" aria-hidden="true" title="Миникарта">
+        <canvas id="minimap-canvas" width="120" height="170"></canvas>
+      </div>
+    </main>
+
+    <!-- Status bar -->
+    <footer class="status-bar" id="status-bar" role="status" aria-live="polite">
+      <span id="status-coords" title="Координаты клетки">— / —</span>
+      <span id="status-tool">Ручка</span>
+      <span id="status-color" class="status-color-indicator" title="Текущий цвет"></span>
+      <span id="status-progress">0 / 2478 кл. (0%)</span>
+    </footer>
+
+    <!-- Mobile toolbar -->
+    <div class="mobile-toolbar" id="mobile-toolbar" role="toolbar" aria-label="Инструменты">
+      <button class="mobile-tool-btn active" id="m-tool-pen" aria-label="Ручка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+        </svg>
+      </button>
+      <button class="mobile-tool-btn" id="m-tool-eraser" aria-label="Ластик">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 20H7L3 16l9-9 8 8-2.5 2.5"/>
+          <path d="M6 17L17 6"/>
+        </svg>
+      </button>
+      <button class="mobile-tool-btn" id="m-undo" aria-label="Отменить" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 7v6h6"/>
+          <path d="M3 13a9 9 0 1018 0 9 9 0 00-15-6.7L3 13"/>
+        </svg>
+      </button>
+      <button class="mobile-tool-btn" id="m-redo" aria-label="Повторить" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M21 7v6h-6"/>
+          <path d="M21 13a9 9 0 10-18 0 9 9 0 0015-6.7L21 13"/>
+        </svg>
+      </button>
+      <div class="mobile-colors" role="radiogroup" aria-label="Цвет">
+        <button class="mobile-color-btn active" data-color="black" style="background:#1a1a2e" aria-label="Чёрный" role="radio" aria-checked="true"></button>
+        <button class="mobile-color-btn" data-color="blue"  style="background:#1a3a8f" aria-label="Синий"  role="radio" aria-checked="false"></button>
+        <button class="mobile-color-btn" data-color="red"   style="background:#c0392b" aria-label="Красный" role="radio" aria-checked="false"></button>
+      </div>
+      <button class="mobile-tool-btn" id="m-zoom-out" aria-label="Уменьшить" style="font-size:18px;font-weight:700;">−</button>
+      <button class="mobile-tool-btn" id="m-zoom-fit" aria-label="По экрану">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
+        </svg>
+      </button>
+      <button class="mobile-tool-btn" id="m-zoom-in" aria-label="Увеличить" style="font-size:18px;font-weight:700;">+</button>
+      <button class="mobile-tool-btn" id="m-save" aria-label="Сохранить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+      </button>
+    </div><!-- /mobile-toolbar -->
+
+  </div><!-- /app -->
+
+  <!-- Modal overlay -->
+  <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div id="modal-content" class="modal-content"></div>
+  </div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

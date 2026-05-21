@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="64" fill="#fdf8f0"/>
+  <g stroke="#9ac4e8" stroke-width="2" opacity="0.5">
+    <line x1="64" y1="64" x2="448" y2="64"/><line x1="64" y1="128" x2="448" y2="128"/>
+    <line x1="64" y1="192" x2="448" y2="192"/><line x1="64" y1="256" x2="448" y2="256"/>
+    <line x1="64" y1="320" x2="448" y2="320"/><line x1="64" y1="384" x2="448" y2="384"/>
+    <line x1="64" y1="448" x2="448" y2="448"/><line x1="64" y1="64" x2="64" y2="448"/>
+    <line x1="128" y1="64" x2="128" y2="448"/><line x1="192" y1="64" x2="192" y2="448"/>
+    <line x1="256" y1="64" x2="256" y2="448"/><line x1="320" y1="64" x2="320" y2="448"/>
+    <line x1="384" y1="64" x2="384" y2="448"/><line x1="448" y1="64" x2="448" y2="448"/>
+  </g>
+  <g fill="#1a3a8f">
+    <rect x="128" y="192" width="64" height="64"/><rect x="320" y="192" width="64" height="64"/>
+    <rect x="192" y="320" width="64" height="64"/><rect x="256" y="320" width="64" height="64"/>
+    <rect x="128" y="320" width="64" height="64"/><rect x="320" y="320" width="64" height="64"/>
+  </g>
+  <path d="M380 132 L404 108 L420 124 L396 148 Z" fill="#1a1a2e"/>
+  <path d="M364 148 L380 132 L396 148 L380 164 Z" fill="#c0392b"/>
+</svg>
