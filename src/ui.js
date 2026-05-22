@@ -10,7 +10,7 @@ import {
 import { exportPNG, printSheet } from './print.js';
 
 const COLOR_LABELS = { 1: 'Чёрный', 2: 'Синий', 3: 'Красный' };
-const TOOL_LABELS  = { pen: 'Ручка', eraser: 'Ластик' };
+const TOOL_LABELS  = { pen: 'Ручка', eraser: 'Ластик', hand: 'Рука' };
 const COLOR_CSS    = { 1: '#1a1a2e', 2: '#1a3a8f', 3: '#c0392b' };
 
 export class UI {
@@ -33,6 +33,7 @@ export class UI {
   _initToolbar() {
     _on('tool-pen',    'click', () => this._selectTool('pen'));
     _on('tool-eraser', 'click', () => this._selectTool('eraser'));
+    _on('tool-hand',   'click', () => this._selectTool('hand'));
     _on('undo-btn', 'click', () => { this.tools.undo(); this._updateUndoRedo(); });
     _on('redo-btn', 'click', () => { this.tools.redo(); this._updateUndoRedo(); });
     document.querySelectorAll('.color-btn[data-color]').forEach(btn => {
@@ -51,6 +52,7 @@ export class UI {
   _initMobileToolbar() {
     _on('m-tool-pen',    'click', () => this._selectTool('pen'));
     _on('m-tool-eraser', 'click', () => this._selectTool('eraser'));
+    _on('m-tool-hand',   'click', () => this._selectTool('hand'));
     _on('m-undo',  'click', () => { this.tools.undo(); this._updateUndoRedo(); });
     _on('m-redo',  'click', () => { this.tools.redo(); this._updateUndoRedo(); });
     _on('m-zoom-in',  'click', () => this._zoomCenter(1.25));

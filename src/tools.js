@@ -54,7 +54,7 @@ export class ToolController {
     this.onToolChange  = callbacks.onToolChange  ?? (() => {});
     this.onColorChange = callbacks.onColorChange ?? (() => {});
 
-    this.tool  = 'pen';    // 'pen' | 'eraser'
+    this.tool  = 'pen';    // 'pen' | 'eraser' | 'hand'
     this.color = 1;        // 1=black 2=blue 3=red
 
     this._history = new History();
@@ -119,8 +119,9 @@ export class ToolController {
   }
 
   _updateCursor() {
-    this.canvas.classList.toggle('pan-cursor',    this._spaceDown || this._isPanning);
-    this.canvas.classList.toggle('eraser-cursor', !this._spaceDown && this.tool === 'eraser');
+    const isPanMode = this._spaceDown || this.tool === 'hand';
+    this.canvas.classList.toggle('pan-cursor',    isPanMode || this._isPanning);
+    this.canvas.classList.toggle('eraser-cursor', !isPanMode && this.tool === 'eraser');
     this.canvas.classList.remove('grabbing-cursor');
   }
 
@@ -131,7 +132,7 @@ export class ToolController {
 
     if (this._pointers.size === 1) {
       const { x, y } = this._canvasPos(e);
-      if (e.button === 1 || e.button === 2 || this._spaceDown) {
+      if (e.button === 1 || e.button === 2 || this._spaceDown || this.tool === 'hand') {
         this._isPanning = true;
         this._lastPanCentroid = { x: e.clientX, y: e.clientY };
         this.canvas.classList.add('grabbing-cursor');

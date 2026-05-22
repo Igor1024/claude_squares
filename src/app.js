@@ -107,8 +107,9 @@ class App {
     if (ctrl && e.key === 'z' && !e.shiftKey) { e.preventDefault(); this.tools.undo(); this.ui._updateUndoRedo(); return; }
     if (ctrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); this.tools.redo(); this.ui._updateUndoRedo(); return; }
     if (ctrl && e.key === 's') { e.preventDefault(); this.ui.showSaveDialog(); return; }
-    if (e.key === 'p' || e.key === 'P') { this.ui._selectTool('pen'); return; }
+    if (e.key === 'p' || e.key === 'P') { this.ui._selectTool('pen');    return; }
     if (e.key === 'e' || e.key === 'E') { this.ui._selectTool('eraser'); return; }
+    if (e.key === 'h' || e.key === 'H') { this.ui._selectTool('hand');   return; }
     if (e.key === '+' || e.key === '=') { this.ui._zoomCenter(1.25); }
     else if (e.key === '-' || e.key === '_') { this.ui._zoomCenter(1 / 1.25); }
     else if (e.key === '0') { this.renderer.fitToScreen(); this.ui._updateZoom(); this.ui._renderMinimap(); }
