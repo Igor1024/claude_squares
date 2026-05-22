@@ -20,17 +20,17 @@
 </head>
 <body>
 
-  <!-- ── Update Banner ──────────────────────────────────────────────── -->
+  <!-- ── Update Banner ──────────────────────────────────────────────────── -->
   <div id="update-banner" class="update-banner hidden" role="alert" aria-live="polite">
     <span>Доступно обновление</span>
     <button id="update-btn">Обновить сейчас</button>
     <button id="update-dismiss" aria-label="Закрыть">✕</button>
   </div>
 
-  <!-- ── Onboarding overlay ─────────────────────────────────────────── -->
+  <!-- ── Onboarding overlay ──────────────────────────────────────────────── -->
   <div id="onboarding" class="onboarding-overlay" role="dialog" aria-modal="true"></div>
 
-  <!-- ── Main App ───────────────────────────────────────────────────── -->
+  <!-- ── Main App ───────────────────────────────────────────────────────── -->
   <div id="app" class="app-container hidden">
 
     <!-- Desktop sidebar -->
@@ -55,14 +55,14 @@
       <div class="tool-group">
         <button class="tool-btn" id="undo-btn" title="Отменить (Ctrl+Z)" aria-label="Отменить" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 7v6h6"/>
-            <path d="M3 13a9 9 0 1018 0 9 9 0 00-15-6.7L3 13"/>
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <polyline points="3 3 3 8 8 8"/>
           </svg>
         </button>
         <button class="tool-btn" id="redo-btn" title="Повторить (Ctrl+Y)" aria-label="Повторить" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 7v6h-6"/>
-            <path d="M21 13a9 9 0 10-18 0 9 9 0 0015-6.7L21 13"/>
+            <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <polyline points="21 3 21 8 16 8"/>
           </svg>
         </button>
       </div>
@@ -177,15 +177,15 @@
         </svg>
       </button>
       <button class="mobile-tool-btn" id="m-undo" aria-label="Отменить" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <path d="M3 7v6h6"/>
-          <path d="M3 13a9 9 0 1018 0 9 9 0 00-15-6.7L3 13"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <polyline points="3 3 3 8 8 8"/>
         </svg>
       </button>
       <button class="mobile-tool-btn" id="m-redo" aria-label="Повторить" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <path d="M21 7v6h-6"/>
-          <path d="M21 13a9 9 0 10-18 0 9 9 0 0015-6.7L21 13"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+          <polyline points="21 3 21 8 16 8"/>
         </svg>
       </button>
       <div class="mobile-colors" role="radiogroup" aria-label="Цвет">
