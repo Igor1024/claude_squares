@@ -58,7 +58,10 @@ export class UI {
     _on('m-zoom-in',  'click', () => this._zoomCenter(1.25));
     _on('m-zoom-out', 'click', () => this._zoomCenter(1 / 1.25));
     _on('m-zoom-fit', 'click', () => { this.renderer.fitToScreen(); this._updateZoom(); this._renderMinimap(); });
-    _on('m-save', 'click', () => this.showSaveDialog());
+    _on('m-save',   'click', () => this.showSaveDialog());
+    _on('m-load',   'click', () => this.showLoadDialog());
+    _on('m-export', 'click', () => this.showExportDialog());
+    _on('m-print',  'click', () => this.showPrintDialog());
     document.querySelectorAll('.mobile-color-btn[data-color]').forEach(btn => {
       btn.addEventListener('click', () => this._selectColor(btn.dataset.color));
     });
@@ -178,6 +181,73 @@ export class UI {
     if (overlay._closeHandler) { overlay.removeEventListener('click', overlay._closeHandler); overlay._closeHandler = null; }
   }
 
+  /**
+   * Custom dialog replacing native prompt()/confirm() (which look out of place
+   * and are blocked in some installed PWAs). Stacks above the main modal.
+   * Returns a Promise: text for input dialogs (null on cancel), boolean otherwise.
+   */
+  _dialog({ title, message, input = false, defaultValue = '', confirmLabel = 'OK', cancelLabel = 'Отмена', danger = false } = {}) {
+    return new Promise(resolve => {
+      const overlay = _mkEl('div', 'modal-overlay');
+      overlay.style.zIndex = '300';   // above the main modal-overlay (200)
+      const box = _mkEl('div', 'modal-content');
+      box.style.maxWidth = '400px';
+
+      if (title) { const t = _mkEl('div', 'modal-title'); t.textContent = title; box.appendChild(t); }
+      if (message) {
+        const p = _mkEl('p');
+        p.style.cssText = 'color:var(--ui-text);font-size:14px;line-height:1.5;margin-bottom:4px;';
+        p.textContent = message;
+        box.appendChild(p);
+      }
+
+      let inputEl = null;
+      if (input) {
+        const fg = _mkEl('div', 'form-group');
+        fg.style.marginTop = '12px';
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.className = 'form-input';
+        inputEl.value = defaultValue;
+        inputEl.maxLength = 40;
+        fg.appendChild(inputEl);
+        box.appendChild(fg);
+      }
+
+      const actions = _mkEl('div', 'modal-actions');
+      const cancelBtn = _mkEl('button', 'btn btn-secondary'); cancelBtn.textContent = cancelLabel;
+      const okBtn = _mkEl('button', 'btn ' + (danger ? 'btn-danger' : 'btn-primary')); okBtn.textContent = confirmLabel;
+      actions.appendChild(cancelBtn); actions.appendChild(okBtn);
+      box.appendChild(actions);
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+
+      const close = result => { overlay.remove(); resolve(result); };
+      const cancelValue = input ? null : false;
+      cancelBtn.addEventListener('click', () => close(cancelValue));
+      okBtn.addEventListener('click', () => close(input ? inputEl.value : true));
+      overlay.addEventListener('click', e => { if (e.target === overlay) close(cancelValue); });
+
+      if (inputEl) {
+        inputEl.addEventListener('keydown', e => {
+          if (e.key === 'Enter')  { e.preventDefault(); okBtn.click(); }
+          if (e.key === 'Escape') { e.preventDefault(); cancelBtn.click(); }
+        });
+        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 0);
+      } else {
+        setTimeout(() => okBtn.focus(), 0);
+      }
+    });
+  }
+
+  _confirm(message, { confirmLabel = 'OK', danger = false } = {}) {
+    return this._dialog({ message, confirmLabel, danger });
+  }
+
+  _prompt(title, defaultValue = '', confirmLabel = 'Сохранить') {
+    return this._dialog({ title, input: true, defaultValue, confirmLabel });
+  }
+
   showSaveDialog() {
     const slots = getSlots();
     const wrap  = _mkEl('div');
@@ -203,7 +273,12 @@ export class UI {
       acts.appendChild(saveBtn);
       if (slot) {
         const delBtn = _mkEl('button', 'btn btn-secondary'); delBtn.textContent = '✕'; delBtn.title = 'Очистить слот';
-        delBtn.addEventListener('click', e => { e.stopPropagation(); if (confirm(`Удалить «${slot.name}»?`)) { deleteSlot(i); this._hideModal(); this.showSaveDialog(); } });
+        delBtn.addEventListener('click', async e => {
+          e.stopPropagation();
+          if (await this._confirm(`Удалить «${slot.name}»?`, { confirmLabel: 'Удалить', danger: true })) {
+            deleteSlot(i); this._hideModal(); this.showSaveDialog();
+          }
+        });
         acts.appendChild(delBtn);
       }
       card.appendChild(acts); grid.appendChild(card);
@@ -215,10 +290,10 @@ export class UI {
     this._showModal(wrap);
   }
 
-  _doSave(i) {
+  async _doSave(i) {
     const existing = getSlots()[i];
     const defaultName = existing?.name || `Рисунок ${i+1}`;
-    const name = prompt('Название рисунка:', defaultName);
+    const name = await this._prompt('Название рисунка', defaultName);
     if (name === null) return;
     const finalName = name.trim() || defaultName;
     const ok = saveSlot(i, finalName, this.renderer.grid, this.renderer.renderThumbnail());
@@ -261,9 +336,9 @@ export class UI {
     this._showModal(wrap);
   }
 
-  _doLoad(i) {
+  async _doLoad(i) {
     const data = loadSlot(i); if (!data) return;
-    if (!confirm(`Загрузить «${data.name}»? Несохранённые изменения будут потеряны.`)) return;
+    if (!await this._confirm(`Загрузить «${data.name}»? Несохранённые изменения будут потеряны.`, { confirmLabel: 'Загрузить' })) return;
     this.renderer.grid.set(data.grid);
     this.renderer.applyCells([]);
     this.renderer.forceRender();

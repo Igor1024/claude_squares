@@ -1,7 +1,7 @@
 // Service Worker — cache-first strategy for full offline support.
 // Relative asset paths resolve against the SW scope, so this works on both
 // root deploys and subpath deploys (e.g. GitHub Pages https://user.github.io/repo/).
-const CACHE = 'pixel-art-v2';
+const CACHE = 'pixel-art-v3';
 
 const ASSETS = [
   './',
