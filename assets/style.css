@@ -266,10 +266,19 @@ input { font: inherit; }
   box-shadow: 0 -2px 8px rgba(0,0,0,.1);
   z-index: 20;
   align-items: center;
-  justify-content: space-around;
+  /* Scroll horizontally instead of overflowing/clipping when buttons don't fit. */
+  justify-content: flex-start;
   padding: 0 8px;
-  gap: 4px;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.mobile-toolbar::-webkit-scrollbar { display: none; }
+.mobile-toolbar > * { flex-shrink: 0; }
+.mobile-toolbar .mobile-colors { margin: 0 2px; }
 
 .mobile-tool-btn {
   min-width: 44px;
@@ -297,8 +306,8 @@ input { font: inherit; }
   align-items: center;
 }
 .mobile-color-btn {
-  width: 28px;
-  height: 28px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 3px solid transparent;
   transition: transform .1s, border-color .15s;
@@ -651,17 +660,21 @@ input { font: inherit; }
 
 /* ── Responsive: Tablet ─────────────────────────────────────────── */
 @media (max-width: 1024px) {
+  /* Single canvas row — the status bar is hidden on mobile, so don't reserve
+     an empty grid row for it. */
   .app-container {
-    grid-template-areas:
-      "canvas canvas"
-      "statusbar statusbar";
+    grid-template-areas: "canvas";
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr var(--statusbar-h);
+    grid-template-rows: 1fr;
   }
   .sidebar { display: none; }
-  .mobile-toolbar { display: flex; }
-  .canvas-area { padding-bottom: var(--mobile-tb-h); }
   .status-bar { display: none; }
+  .mobile-toolbar { display: flex; }
+  /* The viewport is absolutely positioned (inset:0) and ignores padding, so
+     reserve room for the fixed bottom toolbar by lifting its bottom edge. */
+  .canvas-viewport { bottom: var(--mobile-tb-h); }
+  /* Keep the minimap above the toolbar. */
+  .minimap-container { bottom: calc(var(--mobile-tb-h) + 8px); }
 }
 
 /* ── Responsive: Mobile ─────────────────────────────────────────── */

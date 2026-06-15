@@ -72,7 +72,7 @@ export function getSlots() {
   });
 }
 export function autosave(grid, thumbnailDataUrl) {
-  _write(AUTO_KEY, _buildRecord('Автосохранение', grid, thumbnailDataUrl));
+  return _write(AUTO_KEY, _buildRecord('Автосохранение', grid, thumbnailDataUrl));
 }
 export function getAutosave() {
   const rec = _read(AUTO_KEY);

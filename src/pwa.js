@@ -8,7 +8,8 @@ let _updateCallback = null;
 export function initPWA() {
   if (!('serviceWorker' in navigator)) return;
 
-  navigator.serviceWorker.register('/sw.js').then(reg => {
+  // Relative path so it works on both root and subpath deploys (e.g. GitHub Pages /repo/).
+  navigator.serviceWorker.register('sw.js').then(reg => {
     if (reg.waiting) { _waitingWorker = reg.waiting; _updateCallback?.(); }
 
     reg.addEventListener('updatefound', () => {

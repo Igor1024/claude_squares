@@ -50,6 +50,7 @@ class App {
     if (this._pendingAutosave) {
       this.renderer.grid.set(this._pendingAutosave.grid);
       this.renderer.forceRender();
+      this.ui.onGridChange();   // refresh status bar (cell count) and minimap
     }
 
     this._startAutosave();

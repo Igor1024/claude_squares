@@ -220,9 +220,14 @@ export class UI {
     const defaultName = existing?.name || `Рисунок ${i+1}`;
     const name = prompt('Название рисунка:', defaultName);
     if (name === null) return;
-    saveSlot(i, name.trim() || defaultName, this.renderer.grid, this.renderer.renderThumbnail());
+    const finalName = name.trim() || defaultName;
+    const ok = saveSlot(i, finalName, this.renderer.grid, this.renderer.renderThumbnail());
     this._hideModal();
-    this._toast(`Сохранено в слот ${i+1}: «${name || defaultName}»`);
+    if (!ok) {
+      this._toast('⚠ Не удалось сохранить: хранилище переполнено или недоступно');
+      return;
+    }
+    this._toast(`Сохранено в слот ${i+1}: «${finalName}»`);
   }
 
   showLoadDialog() {
